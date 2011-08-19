@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+<title>QueueSlider</title>
+
+<meta name="author" content="Daniel Korte">
+<meta name="description" content="Another jQuery slider plugin for variable width images.">
+<meta name="keywords" content="QueueSlider, queue, slider, jQuery, variable, mixed, width, length">
+<meta name="copyright" content="Copyright 2011, Daniel Korte. Free to use and abuse under the MIT license. http://www.opensource.org/licenses/mit-license.php">
+
+<style>
+/* Required QueueSlider CSS */
+div.queueslider { position:relative; overflow:hidden; width:100%; height:350px; min-width:1024px; }
+div.queueslider ul.queue { position:absolute; top:0; left:0; display:block; margin:0; padding:0; }
+div.queueslider ul.queue li { float:left; display:block; margin:0; padding:0; list-style:none; text-align:center; }
+div.queueslider ul.queue li div, div.queueslider ul.queue li img, div.queueslider ul.queue li video, div.queueslider ul.queue li audio { margin:0 auto; text-align:left; }
+div.queueslider button { z-index:100; position:absolute; display:block; margin:0; padding:5px; outline:none; border:none; cursor:pointer; }
+div.queueslider button#previous { left:0; }
+div.queueslider button#next { right:0; }
+</style>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<div class="queueslider">
+  <ul class="queue">
+    <li><img src="images/img1.jpg" alt="Entering Louisville, KY" /></li>
+    <li><img src="images/img2.jpg" alt="Bridges" /></li>
+    <li><img src="images/img3.jpg" alt="Chicago, IL from Grant Park" /></li>
+    <li><img src="images/img4.jpg" alt="Bridge in Chicago, IL" /></li>
+  </ul>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="jquery-1.6.2.min.js"><\/script>')</script>
+
+<script src="../jquery.queueslider.min.js"></script>
+<script defer>
+(function($){
+  $('div.queueslider').queueSlider();
+})(jQuery);
+</script>
+
+</body>
+</html>

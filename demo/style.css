@@ -1,0 +1,58 @@
+body {
+  margin:0;
+  padding:0;
+  font:10px/10px Helvetica, sans-serif;
+  background-color:black;
+}
+div.queueslider {
+  margin-top:100px;
+  min-width:1000px;
+  height:400px;
+}
+div.queueslider ul.queue {
+  background-color:black;
+}
+div.queueslider button { 
+  top:115px;
+  padding:10px 0;
+  width:65px;
+  color:black;
+  text-align:center;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-topright: 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color:white;
+}
+div.queueslider button:hover, div.queueslider button:focus {
+  color:white;
+  background-color:black;
+}
+div.queueslider button#previous {
+  -webkit-transform :rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+  -webkit-transform-origin: bottom left;
+  -moz-transform-origin: bottom left;
+  -ms-transform-origin: bottom left;
+  -o-transform-origin: bottom left;
+  transform-origin: bottom left;
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+div.queueslider button#next {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  -webkit-transform-origin: bottom right;
+  -moz-transform-origin: bottom right;
+  -ms-transform-origin: bottom right;
+  -o-transform-origin: bottom right;
+  transform-origin: bottom right;
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}

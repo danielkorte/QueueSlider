@@ -6,7 +6,7 @@
 
 ```
 fade: 0.3,              // Opacity of images not being viewed, use -1 to disable
-fadeSpeed: 700,         // in milliseconds
+transitionSpeed: 700,   // in milliseconds, speed for fade and slide motion
 speed: 7000,            // in milliseconds, use 0 to disable slideshow
 direction: 1,           // 1 for images to slide to the left, -1 to silde to the right during slideshow
 offScreen: false,       // Set to true for a Hulu.com-like slider

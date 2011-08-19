@@ -2,7 +2,6 @@
  * jQuery Queue Slider v1.0
  * http://danielkorte.com
  *
- * Copyright 2011, Daniel Korte
  * Free to use and abuse under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
  * 
@@ -33,7 +32,7 @@
     
     function requeue() {
       $('li', queue).each(function(key, value) {
-        $(this).attr('id', 'slide-'+(key+1));
+        $(this).attr('class', 'slide-'+(key+1));
       });
     }
     
@@ -77,14 +76,14 @@
     
     function slide() {
       var animationSettings = {
-        duration: settings.fadeSpeed,
+        duration: settings.transitionSpeed,
         queue: false
       };
       
       // Emulate an infinte loop:
       // Bring the first image to the end.
       if ( current === numImages ) {
-        var firstImage = $('li#slide-1', queue);
+        var firstImage = $('li.slide-1', queue);
         
         widths.push(widths.shift());
         queue.css('left', queue.position().left + firstImage.width()).append(firstImage);
@@ -103,8 +102,8 @@
       
       // Fade in the current and out the previous images.
       if (settings.fade !== -1) {
-        $('li#slide-'+current, queue).animate({ opacity: 1 }, animationSettings );
-        $('li#slide-'+previous, queue).animate({ opacity: settings.fade }, animationSettings );
+        $('li.slide-'+current, queue).animate({ opacity: 1 }, animationSettings );
+        $('li.slide-'+previous, queue).animate({ opacity: settings.fade }, animationSettings );
       }
       
       // Animate the queue.
@@ -126,11 +125,11 @@
       requeue();
       
       // Fade out the images we aren't viewing.
-      if (settings.fade !== -1) { $('li', queue).not('#slide-2').css('opacity', settings.fade); }
+      if (settings.fade !== -1) { $('li', queue).not('.slide-2').css('opacity', settings.fade); }
       
       // Include the buttons if enabled and assign a click event to them.
       if (settings.buttons) {
-        slider.append('<button id="previous" rel="-1">' + settings.previous + '</button><button id="next" rel="1">' + settings.next + '</button>');
+        slider.append('<button class="previous" rel="-1">' + settings.previous + '</button><button class="next" rel="1">' + settings.next + '</button>');
         $('button', slider).click(function() {
           if ( !busy ) {
             busy = true;
@@ -174,7 +173,7 @@
   
   $.fn.queueSlider.defaults = {
     fade: 0.3,              // Opacity of images not being viewed, use -1 to disable
-    fadeSpeed: 700,         // in milliseconds
+    transitionSpeed: 700,   // in milliseconds, speed for fade and slide motion
     speed: 7000,            // in milliseconds, use 0 to disable slideshow
     direction: 1,           // 1 for images to slide to the left, -1 to silde to the right during slideshow
     offScreen: false,       // Set to true for a Hulu.com-like slider

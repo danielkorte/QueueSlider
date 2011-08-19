@@ -30,7 +30,7 @@ div.queueslider button:hover, div.queueslider button:focus {
   color:white;
   background-color:black;
 }
-div.queueslider button#previous {
+div.queueslider button.previous {
   -webkit-transform :rotate(90deg);
   -moz-transform: rotate(90deg);
   -ms-transform: rotate(90deg);
@@ -43,7 +43,7 @@ div.queueslider button#previous {
   transform-origin: bottom left;
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
-div.queueslider button#next {
+div.queueslider button.next {
   -webkit-transform: rotate(-90deg);
   -moz-transform: rotate(-90deg);
   -ms-transform: rotate(-90deg);

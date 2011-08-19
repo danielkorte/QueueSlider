@@ -19,8 +19,8 @@ div.queueslider ul.queue { position:absolute; top:0; left:0; display:block; marg
 div.queueslider ul.queue li { float:left; display:block; margin:0; padding:0; list-style:none; text-align:center; }
 div.queueslider ul.queue li div, div.queueslider ul.queue li img, div.queueslider ul.queue li video, div.queueslider ul.queue li audio { margin:0 auto; text-align:left; }
 div.queueslider button { z-index:100; position:absolute; display:block; margin:0; padding:5px; outline:none; border:none; cursor:pointer; }
-div.queueslider button#previous { left:0; }
-div.queueslider button#next { right:0; }
+div.queueslider button.previous { left:0; }
+div.queueslider button.next { right:0; }
 </style>
 
 <link rel="stylesheet" href="style.css">
@@ -28,7 +28,16 @@ div.queueslider button#next { right:0; }
 </head>
 <body>
 
-<div class="queueslider">
+<div id="qs1" class="queueslider">
+  <ul class="queue">
+    <li><img src="images/img1.jpg" alt="Entering Louisville, KY" /></li>
+    <li><img src="images/img2.jpg" alt="Bridges" /></li>
+    <li><img src="images/img3.jpg" alt="Chicago, IL from Grant Park" /></li>
+    <li><img src="images/img4.jpg" alt="Bridge in Chicago, IL" /></li>
+  </ul>
+</div>
+
+<div id="qs2" class="queueslider">
   <ul class="queue">
     <li><img src="images/img1.jpg" alt="Entering Louisville, KY" /></li>
     <li><img src="images/img2.jpg" alt="Bridges" /></li>
@@ -43,7 +52,17 @@ div.queueslider button#next { right:0; }
 <script src="../jquery.queueslider.min.js"></script>
 <script defer>
 (function($){
-  $('div.queueslider').queueSlider();
+  $('div#qs1').queueSlider();
+  
+  $('div#qs2').queueSlider({
+    fade: -1,
+    transitionSpeed: 300,
+    speed: 0,
+    direction: -1,
+    offScreen: false,
+    previous: 'v',
+    next: 'v'
+  });
 })(jQuery);
 </script>
 

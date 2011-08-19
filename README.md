@@ -15,12 +15,23 @@ previous: 'Previous',   // Previous button text
 next: 'Next'            // Next button text
 ```
 
+## Supported Browsers
+
+* Chrome
+* Internet Explorer (6, 7, 8 and 9)
+* Firefox
+* Safari
+
+## License
+
+Free to use and abuse under the MIT license. [http://www.opensource.org/licenses/mit-license.php](http://www.opensource.org/licenses/mit-license.php)
+
 ## Author
 
-Daniel Korte
-Web Developer
-TOKY Branding + Design
-Saint Louis, MO
+Daniel Korte  
+Web Developer  
+TOKY Branding + Design  
+Saint Louis, MO  
 
-[toky.com](http://toky.com/)
+[toky.com](http://toky.com/)  
 [danielkorte.com](http://danielkorte.com/)

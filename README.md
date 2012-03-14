@@ -2,6 +2,13 @@
 
 **QueueSlider** is another jQuery slider plugin for variable width images.
 
+## Download
+
+Download the [production version][min] or the [development version][max].
+
+[min]: https://raw.github.com/daniel/QueueSlider/master/jquery.queueslider.min.js
+[max]: https://raw.github.com/daniel/QueueSlider/master/jquery.queueslider.js
+
 ## Default Settings
 
 ```

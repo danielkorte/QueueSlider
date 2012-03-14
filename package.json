@@ -1,0 +1,29 @@
+{
+  "name": "jQuery QueueSlider",
+  "title": "jQuery QueueSlider",
+  "description": "QueueSlider is another jQuery slider plugin for variable width images.",
+  "version": "0.1.0",
+  "homepage": "http://queueslider.danielkorte.com/",
+  "author": {
+    "name": "Daniel Korte",
+    "email": "daniel@toky.com",
+    "url": "http://danielkorte.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github:danielkorte/QueueSlider.git"
+  },
+  "bugs": {
+    "url": "https://github.com/danielkorte/QueueSlider/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "description": "Free to use and abuse under the MIT license.",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": []
+}

@@ -6,13 +6,12 @@ body {
 }
 div.queueslider {
   margin-top:100px;
-  min-width:1000px;
   height:400px;
 }
 div.queueslider ul.queue {
   background-color:black;
 }
-div.queueslider button { 
+div.queueslider button {
   top:115px;
   padding:10px 0;
   width:65px;

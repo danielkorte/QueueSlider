@@ -17,6 +17,8 @@ transitionSpeed: 700,   // in milliseconds, speed for fade and slide motion
 speed: 7000,            // in milliseconds, use 0 to disable slideshow
 direction: 1,           // 1 for images to slide to the left, -1 to silde to the right during slideshow
 offScreen: false,       // Set to true for a Hulu.com-like slider
+touchEnabled: true,     // Allow touch interaction with the slideshow
+swipeThreshold: 50,     // Amount of pixels a touch swipe needs to exceed in order to slide
 buttons: true,          // Display Previous/Next buttons
 previous: 'Previous',   // Previous button text
 next: 'Next'            // Next button text
@@ -35,10 +37,10 @@ Free to use and abuse under the MIT license. [http://www.opensource.org/licenses
 
 ## Author
 
-Daniel Korte  
-Web Developer  
-TOKY Branding + Design  
-Saint Louis, MO  
+Daniel Korte
+Web Developer
+TOKY Branding + Design
+Saint Louis, MO
 
-[toky.com](http://toky.com/)  
+[toky.com](http://toky.com/)
 [danielkorte.com](http://danielkorte.com/)

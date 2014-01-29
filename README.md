@@ -12,6 +12,7 @@ Download the [production version][min] or the [development version][max].
 ## Default Settings
 
 ```
+alignMode: 'center',    // Use center, left, or right to align the slideshow
 fade: 0.3,              // Opacity of images not being viewed, use -1 to disable
 transitionSpeed: 700,   // in milliseconds, speed for fade and slide motion
 speed: 7000,            // in milliseconds, use 0 to disable slideshow

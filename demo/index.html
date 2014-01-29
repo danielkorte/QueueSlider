@@ -51,19 +51,21 @@ div.queueslider button.next { right:0; }
 
 <script src="../jquery.queueslider.min.js"></script>
 <script defer>
-(function($){
-  $('div#qs1').queueSlider();
+(function($) {
+  $(window).bind('load', function() {
+    $('div#qs1').queueSlider();
 
-  $('div#qs2').queueSlider({
-    fade: -1,
-    transitionSpeed: 300,
-    speed: 0,
-    direction: -1,
-    offScreen: false,
-    previous: 'v',
-    next: 'v'
+    $('div#qs2').queueSlider({
+      fade: -1,
+      transitionSpeed: 300,
+      speed: 0,
+      direction: -1,
+      offScreen: false,
+      previous: 'v',
+      next: 'v'
+    });
   });
-})(jQuery);
+}(jQuery));
 </script>
 
 </body>

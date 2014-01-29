@@ -38,7 +38,7 @@
       current += dir;
       if (current < 1) {
         current = numImages;
-      } else if (current > numImages) { 
+      } else if (current > numImages) {
         current = 1;
       }
     }

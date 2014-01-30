@@ -19,9 +19,10 @@
         usingCSS,
         cssPrefix,
         animProp,
-        slider = $(element),
-        queue = $('ul.queue', slider),
-        numSlides = $('li', queue).length,
+        $slider = $(element),
+        $queue = $('ul.queue', $slider),
+        $slides = $('li', $queue),
+        numSlides = $slides.length,
         viewportWidth = $(window).width(),
         settings = $.extend({}, $.fn.queueSlider.defaults, options);
 
@@ -58,7 +59,7 @@
       var queueWidth = 0;
 
       // Get the image widths and set the queue width to their combined value.
-      $('li', queue).each(function(key, value) {
+      $slides.each(function(key, value) {
         if (settings.offScreen) {
           var slide = $(this),
               width = slide.innerWidth(),
@@ -71,7 +72,7 @@
         }
       });
 
-      queue.css('width', queueWidth);
+      $queue.css('width', queueWidth);
     }
 
     function slide(dir) {
@@ -84,15 +85,11 @@
 
       // Fade in the current slide and out the previous slide.
       if (settings.fade !== -1) {
-        $('li', queue)
-          .eq(current_index)
+        $slides.eq(current_index)
           .addClass('current')
-          .stop()
           .fadeTo(settings.transitionSpeed, 1);
-        $('li', queue)
-          .eq(previous_index)
+        $slides.eq(previous_index)
           .removeClass('current')
-          .stop()
           .fadeTo(settings.transitionSpeed, settings.fade);
       }
 
@@ -104,46 +101,49 @@
       if (usingCSS) {
         var propValue = 'translate3d(' + value + 'px, 0, 0)';
         speed = speed !== undefined ? speed : (settings.transitionSpeed / 1000);
-        queue.css('-' + cssPrefix + '-transition-duration', speed + 's');
-        queue.css(animProp, propValue);
+        $queue.css('-' + cssPrefix + '-transition-duration', speed + 's');
+        $queue.css(animProp, propValue);
         if (type === 'slide') {
-          queue.bind('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function() {
-            slideComplete();
-            queue.unbind('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd');
-          });
+          setTimeout(function() {
+            if (busy) {
+              slideComplete();
+            }
+          }, (speed * 1000) + 1);
         }
       } else {
         if (type === 'slide') {
-          queue.stop().animate({left: value}, {
+          $queue.animate({left: value}, {
             duration: settings.transitionSpeed,
             complete: slideComplete
           });
         } else {
-          queue.css('left', value);
+          $queue.css('left', value);
         }
       }
     }
 
     var slideComplete = function() {
-      // Emulate an infinte loop:
+      // Emulate an infinite loop:
       // Bring the first image to the end.
       if (numSlides > 2) {
         if (current_index === (numSlides - 1)) {
-          var firstImage = $('li:first-child', queue);
+          var $firstSlide = $slides.filter(':first-child');
 
           widths.push(widths.shift());
-          queue.append(firstImage);
-          setPosition(queue.position().left + firstImage.innerWidth(), 'reset', 0);
+          setPosition($queue.position().left + $firstSlide.innerWidth(), 'reset', 0);
+          $queue.append($firstSlide);
           current_index--;
+          $slides = $('li', $queue);
         }
         // Bring the last image to the beginning.
         else if (current_index === 0) {
-          var lastImage = $('li:last-child', queue);
+          var $lastSlide = $slides.filter(':last-child');
 
           widths.unshift(widths.pop());
-          queue.prepend(lastImage);
-          setPosition(queue.position().left + -lastImage.innerWidth(), 'reset', 0);
+          setPosition($queue.position().left + -$lastSlide.innerWidth(), 'reset', 0);
+          $queue.prepend($lastSlide);
           current_index = 1;
+          $slides = $('li', $queue);
         }
       }
       previous_index = current_index;
@@ -156,7 +156,7 @@
         start: {x: 0, y: 0},
         end: {x: 0, y: 0}
       };
-      slider.bind('touchstart', onTouchStart);
+      $slider.bind('touchstart', onTouchStart);
     }
 
     var onTouchStart = function(e) {
@@ -164,14 +164,14 @@
         e.preventDefault();
       } else {
         // Record the original position when the touch starts.
-        touch.originalPos = queue.position();
+        touch.originalPos = $queue.position();
         // Record the starting touch x, y coordinates.
         touch.start.x = e.originalEvent.changedTouches[0].pageX;
         touch.start.y = e.originalEvent.changedTouches[0].pageY;
         // Bind a "touchmove" event to the slider.
-        slider.bind('touchmove', onTouchMove);
+        $slider.bind('touchmove', onTouchMove);
         // Bind a "touchend" event to the slider.
-        slider.bind('touchend', onTouchEnd);
+        $slider.bind('touchend', onTouchEnd);
       }
     };
 
@@ -181,7 +181,7 @@
     };
 
     var onTouchEnd = function(e) {
-      slider.unbind('touchmove', onTouchMove);
+      $slider.unbind('touchmove', onTouchMove);
 
       // Record end x, y positions.
       touch.end.x = e.originalEvent.changedTouches[0].pageX;
@@ -196,21 +196,27 @@
         } else {
           plugin.previousSlide();
         }
+      } else {
+        setPosition(touch.originalPos.left, 'reset', 0);
       }
 
-      slider.unbind('touchend', onTouchEnd);
+      $slider.unbind('touchend', onTouchEnd);
     };
 
     plugin.nextSlide = function() {
-      busy = true;
-      clearInterval(play);
-      slide(1);
+      if (!busy) {
+        busy = true;
+        clearInterval(play);
+        slide(1);
+      }
     };
 
     plugin.previousSlide = function() {
-      busy = true;
-      clearInterval(play);
-      slide(-1);
+      if (!busy) {
+        busy = true;
+        clearInterval(play);
+        slide(-1);
+      }
     };
 
     plugin.getCurrent = function() {
@@ -237,7 +243,7 @@
       }());
 
       if (usingCSS) {
-        queue.css('-' + cssPrefix + '-transition-timing-function', settings);
+        $queue.css('-' + cssPrefix + '-transition-timing-function', settings);
       }
 
       if (settings.touchEnabled) {
@@ -248,18 +254,19 @@
       // on both sides of the current slide.
       computeQueueWidth();
       widths.unshift(widths.pop());
-      queue.prepend($('li:last-child', queue));
+      $queue.prepend($slides.filter(':last-child'));
+      $slides = $('li', $queue);
       setPosition(-getQueuePosition(), 'reset', 0);
 
       // Fade out the images we aren't viewing.
       if (settings.fade !== -1) {
-        $('li', queue).not(':eq(1)').css('opacity', settings.fade);
+        $slides.not(':eq(1)').css('opacity', settings.fade);
       }
 
       // Include the buttons if enabled and assign a click event to them.
       if (settings.buttons) {
-        slider.append('<button class="previous" rel="-1">' + settings.previous + '</button><button class="next" rel="1">' + settings.next + '</button>');
-        $('button', slider).click(function() {
+        $slider.append('<button class="previous" rel="-1">' + settings.previous + '</button><button class="next" rel="1">' + settings.next + '</button>');
+        $('button', $slider).click(function() {
           if (!busy) {
             busy = true;
             clearInterval(play);
@@ -285,13 +292,13 @@
 
   $.fn.queueSlider = function(options) {
     return this.each(function(key, value) {
-      var element = $(this);
+      var $element = $(this);
       // Return early if this element already has a plugin instance.
-      if (element.data('queueslider')) { return element.data('queueslider'); }
+      if ($element.data('queueslider')) { return $element.data('queueslider'); }
       // Pass options to plugin constructor.
       var queueslider = new QueueSlider(this, options);
       // Store plugin object in this element's data.
-      element.data('queueslider', queueslider);
+      $element.data('queueslider', queueslider);
     });
   };
 

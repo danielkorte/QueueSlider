@@ -19,6 +19,7 @@
         usingCSS,
         cssPrefix,
         animProp,
+        durationProp,
         $slider = $(element),
         $queue = $('ul.queue', $slider),
         $slides = $('li', $queue),
@@ -99,10 +100,11 @@
 
     function setPosition(value, type, speed) {
       if (usingCSS) {
-        var propValue = 'translate3d(' + value + 'px, 0, 0)';
         speed = speed !== undefined ? speed : (settings.transitionSpeed / 1000);
-        $queue.css('-' + cssPrefix + '-transition-duration', speed + 's');
-        $queue.css(animProp, propValue);
+        var css = {};
+        css[durationProp] = speed + 's';
+        css[animProp] = 'translate3d(' + value + 'px, 0, 0)';
+        $queue.css(css);
         if (type === 'slide') {
           setTimeout(function() {
             if (busy) {
@@ -124,26 +126,22 @@
 
     var slideComplete = function() {
       // Emulate an infinite loop:
-      // Bring the first image to the end.
       if (numSlides > 2) {
+        // Bring the first image to the end.
         if (current_index === (numSlides - 1)) {
           var $firstSlide = $slides.filter(':first-child');
-
           widths.push(widths.shift());
           current_index--;
           setPosition(-getQueuePosition(), 'reset', 0);
-          $queue.append($firstSlide);
-          $slides = $('li', $queue);
+          $slides = $('li', $queue.append($firstSlide));
         }
         // Bring the last image to the beginning.
         else if (current_index === 0) {
           var $lastSlide = $slides.filter(':last-child');
-
           widths.unshift(widths.pop());
           current_index = 1;
           setPosition(-getQueuePosition(), 'reset', 0);
-          $queue.prepend($lastSlide);
-          $slides = $('li', $queue);
+          $slides = $('li', $queue.prepend($lastSlide));
         }
       }
       previous_index = current_index;
@@ -236,6 +234,7 @@
           if (div.style[props[i]] !== undefined) {
             cssPrefix = props[i].replace('Perspective', '').toLowerCase();
             animProp = '-' + cssPrefix + '-transform';
+            durationProp = '-' + cssPrefix + '-transition-duration';
             return true;
           }
         }

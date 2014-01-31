@@ -130,9 +130,9 @@
           var $firstSlide = $slides.filter(':first-child');
 
           widths.push(widths.shift());
-          setPosition($queue.position().left + $firstSlide.innerWidth(), 'reset', 0);
-          $queue.append($firstSlide);
           current_index--;
+          setPosition(-getQueuePosition(), 'reset', 0);
+          $queue.append($firstSlide);
           $slides = $('li', $queue);
         }
         // Bring the last image to the beginning.
@@ -140,9 +140,9 @@
           var $lastSlide = $slides.filter(':last-child');
 
           widths.unshift(widths.pop());
-          setPosition($queue.position().left + -$lastSlide.innerWidth(), 'reset', 0);
-          $queue.prepend($lastSlide);
           current_index = 1;
+          setPosition(-getQueuePosition(), 'reset', 0);
+          $queue.prepend($lastSlide);
           $slides = $('li', $queue);
         }
       }

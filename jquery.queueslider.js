@@ -25,15 +25,14 @@
         $slides = $('li', $queue),
         numSlides = $slides.length,
         viewportWidth = $(window).width(),
-        settings = $.extend({}, $.fn.queueSlider.defaults, options);
-
-    $(window).resize(function() {
-      busy = true;
-      viewportWidth = $(window).width();
-      computeQueueWidth();
-      setPosition(-getQueuePosition(), 'reset', 0);
-      busy = false;
-    });
+        settings = $.extend({}, $.fn.queueSlider.defaults, options),
+        resize_queueslider = function() {
+          busy = true;
+          viewportWidth = $(window).width();
+          computeQueueWidth();
+          setPosition(-getQueuePosition(), 'reset', 0);
+          busy = false;
+        };
 
     function getQueuePosition() {
       var i = 0,
@@ -63,13 +62,13 @@
       $slides.each(function(key, value) {
         if (settings.offScreen) {
           var slide = $(this),
-              width = slide.innerWidth(),
+              width = slide.outerWidth(true),
               margins = viewportWidth - width;
 
           queueWidth += widths[key] = width + (margins > 0 ? margins : 0);
           slide.css('width', widths[key]+'px');
         } else {
-          queueWidth += widths[key] = $(this).innerWidth();
+          queueWidth += widths[key] = $(this).outerWidth(true);
         }
       });
 
@@ -85,17 +84,24 @@
       }
 
       // Fade in the current slide and out the previous slide.
-      if (settings.fade !== -1) {
-        $slides.eq(current_index)
-          .addClass('current')
-          .fadeTo(settings.transitionSpeed, 1);
-        $slides.eq(previous_index)
-          .removeClass('current')
-          .fadeTo(settings.transitionSpeed, settings.fade);
-      }
+      fadeSlides(current_index, previous_index);
 
       // Animate the queue.
       setPosition(-getQueuePosition(), 'slide');
+    }
+
+    function fadeSlides(inSlide, outSlide, speed) {
+      if (settings.fade !== -1) {
+        speed = speed === undefined ? settings.transitionSpeed : speed;
+        $slides.eq(inSlide)
+          .addClass('current')
+          .children('img')
+          .fadeTo(speed, 1);
+        $slides.eq(outSlide)
+          .removeClass('current')
+          .children('img')
+          .fadeTo(speed, settings.fade);
+      }
     }
 
     function setPosition(value, type, speed) {
@@ -126,24 +132,19 @@
 
     var slideComplete = function() {
       // Emulate an infinite loop:
-      if (numSlides > 2) {
-        // Bring the first image to the end.
-        if (current_index === (numSlides - 1)) {
-          var $firstSlide = $slides.filter(':first-child');
-          widths.push(widths.shift());
-          current_index--;
-          setPosition(-getQueuePosition(), 'reset', 0);
-          $slides = $('li', $queue.append($firstSlide));
-        }
-        // Bring the last image to the beginning.
-        else if (current_index === 0) {
-          var $lastSlide = $slides.filter(':last-child');
-          widths.unshift(widths.pop());
-          current_index = 1;
-          setPosition(-getQueuePosition(), 'reset', 0);
-          $slides = $('li', $queue.prepend($lastSlide));
-        }
+      // Bring the first image to the end.
+      if (current_index === (numSlides - 1)) {
+        current_index = 1;
+        fadeSlides(1, numSlides - 1, 0);
+        setPosition(-getQueuePosition(), 'reset', 0);
       }
+      // Bring the last image to the beginning.
+      else if (current_index === 0) {
+        current_index = numSlides - 2;
+        fadeSlides(numSlides - 2, 0, 0);
+        setPosition(-getQueuePosition(), 'reset', 0);
+      }
+
       previous_index = current_index;
       busy = false;
     };
@@ -174,7 +175,14 @@
     };
 
     var onTouchMove = function(e) {
-      var change = e.originalEvent.changedTouches[0].pageX - touch.start.x;
+      var xMovement = Math.abs(e.originalEvent.changedTouches[0].pageX - touch.start.x),
+          yMovement = Math.abs(e.originalEvent.changedTouches[0].pageY - touch.start.y),
+          change = e.originalEvent.changedTouches[0].pageX - touch.start.x;
+
+      if ((xMovement * 3) > yMovement) {
+        e.preventDefault();
+      }
+
       setPosition(touch.originalPos.left + change, 'reset', 0);
     };
 
@@ -249,17 +257,19 @@
         initTouch();
       }
 
-      // Move the last slide to the beginning of the queue so there is an image
-      // on both sides of the current slide.
-      computeQueueWidth();
-      widths.unshift(widths.pop());
-      $queue.prepend($slides.filter(':last-child'));
+      // Clone the first and last slides.
+      $queue.prepend($slides.eq(numSlides - 1).clone());
+      $queue.append($slides.eq(0).clone().removeClass('current'));
       $slides = $('li', $queue);
+      numSlides++;
+      numSlides++;
+
+      computeQueueWidth();
       setPosition(-getQueuePosition(), 'reset', 0);
 
       // Fade out the images we aren't viewing.
       if (settings.fade !== -1) {
-        $slides.not(':eq(1)').css('opacity', settings.fade);
+        $slides.not(':eq(1)').children('img').fadeTo(0, settings.fade);
       }
 
       // Include the buttons if enabled and assign a click event to them.
@@ -284,6 +294,8 @@
           }
         }, settings.speed);
       }
+
+      $(window).bind('resize', resize_queueslider);
     }
 
     return plugin;

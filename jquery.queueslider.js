@@ -249,10 +249,6 @@
         return false;
       }());
 
-      if (usingCSS) {
-        $queue.css('-' + cssPrefix + '-transition-timing-function', settings);
-      }
-
       if (settings.touchEnabled) {
         initTouch();
       }

@@ -109,5 +109,5 @@ Web Developer
 TOKY Branding + Design  
 Saint Louis, MO
 
-[toky.com](http://toky.com/)
+[toky.com](http://toky.com/)  
 [danielkorte.com](http://danielkorte.com/)

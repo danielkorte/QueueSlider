@@ -1,5 +1,5 @@
 /*
- * jQuery Queue Slider v1.1
+ * jQuery Queue Slider v1.2
  * http://danielkorte.com
  *
  * Free to use and abuse under the MIT license.
@@ -10,110 +10,210 @@
   var QueueSlider = function(element, options) {
 
     var plugin = this,
-        play = false,
-        busy = false,
-        current_index = 1,
-        previous_index = 1,
-        widths = [],
-        touch,
-        usingCSS,
-        cssPrefix,
-        animProp,
-        durationProp,
         $slider = $(element),
-        $queue = $('ul.queue', $slider),
+        $queue = $('.queue', $slider),
         $slides = $('li', $queue),
-        numSlides = $slides.length,
-        viewportWidth = $(window).width(),
-        settings = $.extend({}, $.fn.queueSlider.defaults, options),
-        resize_queueslider = function() {
-          busy = true;
-          viewportWidth = $(window).width();
-          computeQueueWidth();
-          setPosition(-getQueuePosition(), 'reset', 0);
-          busy = false;
-        };
+        widths = [],
+        touch = {},
+        css = {},
+        state = {
+          initialized: false,
+          playing: false,
+          busy: false,
+          count: 0,
+          index: {
+            active: 1,
+            previous: 1
+          },
+          viewport: {
+            width: $(window).width(),
+          }
+        },
+        settings = $.extend({}, $.fn.queueSlider.defaults, options);
 
-    function getQueuePosition() {
+    //
+    // Private Functions
+    //
+
+    var init = function() {
+      if (state.initialized) {
+        return;
+      }
+
+      // Initialize our common jQuery variables and the slide count.
+      $queue = $('.queue', $slider);
+      $slides = $('li', $queue);
+      state.count = $slides.length;
+
+      if (state.count > 1) {
+        // Test to see if CSS transforms are available.
+        css.available = (function() {
+          var div = document.createElement('div'),
+              props = ['WebkitPerspective', 'MozPerspective', 'OPerspective', 'msPerspective'];
+
+          // Test for each property.
+          for (var i in props) {
+            if (div.style[props[i]] !== undefined) {
+              css.vendor_prefix = '-' + props[i].replace('Perspective', '').toLowerCase();
+              css.transform = css.vendor_prefix + '-transform';
+              css.transform_duration = css.vendor_prefix + '-transition-duration';
+              return true;
+            }
+          }
+          return false;
+        }());
+
+        if (settings.touchEnabled) {
+          initTouch();
+        }
+
+        // Clone the first and last slides.
+        $queue.prepend($slides.last().clone().addClass('qs-clone'));
+        $queue.append($slides.first().clone().removeClass('active').addClass('qs-clone'));
+
+        // Re-queue the slides.
+        $slides = $('li', $queue);
+        state.count = $slides.length;
+
+        // Save the original style data.
+        $queue.data('origStyle', $queue.attr('style'));
+        $slides.each(function() {
+          $(this).data('origStyle', $(this).attr('style'));
+        });
+
+        // Position and calculate the slider and slides.
+        computeQueueWidth();
+        setPosition(-getQueuePosition(), 'reset', 0);
+
+        // Fade out the images we aren't viewing.
+        if (settings.fade !== -1) {
+          $slides.not(':eq(1)').children('img').fadeTo(0, settings.fade);
+        }
+
+        // Include the buttons if enabled and assign a click event to them.
+        if (settings.buttons) {
+          $slider
+            .append('<button class="qs-previous" rel="-1">' + settings.previous + '</button>')
+            .append('<button class="qs-next" rel="1">' + settings.next + '</button>');
+          $('button', $slider).bind('click.queueSlider', function(e) {
+            if (!state.busy) {
+              state.busy = true;
+              clearInterval(state.play);
+              slide(parseInt($(this).attr('rel'), 10));
+            }
+            return false;
+          });
+        }
+
+        // Auto-play the slider if it is enabled.
+        if (settings.speed !== 0) {
+          state.play = setInterval(function() {
+            if (!state.busy) {
+              state.busy = true;
+              slide(settings.direction);
+            }
+          }, settings.speed);
+        }
+
+        $(window).bind('resize.queueSlider', resizeQueueSlider);
+      }
+
+      state.initialized = true;
+    };
+
+    var resizeQueueSlider = function(e) {
+      state.busy = true;
+      state.viewport.width = $(window).width();
+      computeQueueWidth();
+      setPosition(-getQueuePosition(), 'reset', 0);
+      state.busy = false;
+    };
+
+    var getQueuePosition = function() {
       var i = 0,
-          queuePosition;
+          position = 0;
 
       switch (settings.alignMode) {
         case 'center':
-          queuePosition = (viewportWidth - widths[current_index]) / -2;
-          break;
-        case 'left':
-          queuePosition = 0;
+          position = (state.viewport.width - widths[state.index.active]) / -2;
           break;
         case 'right':
-          queuePosition = viewportWidth - widths[current_index];
+          position = state.viewport.width - widths[state.index.active];
           break;
       }
 
-      for (i = 0; i < current_index; i++) { queuePosition += widths[i]; }
+      for (i = 0; i < state.index.active; i++) {
+        position += widths[i];
+      }
 
-      return queuePosition;
-    }
+      return position;
+    };
 
-    function computeQueueWidth() {
-      var queueWidth = 0;
+    var computeQueueWidth = function() {
+      var queue_width = 0;
 
       // Get the image widths and set the queue width to their combined value.
       $slides.each(function(key, value) {
         if (settings.offScreen) {
-          var slide = $(this),
-              width = slide.outerWidth(true),
-              margins = viewportWidth - width;
+          var slide = $(this);
+          if ($(this).data('origStyle') === undefined) {
+            slide.removeAttr('style');
+          } else {
+            slide.attr('style', $(this).data('origStyle'));
+          }
 
-          queueWidth += widths[key] = width + (margins > 0 ? margins : 0);
+          var width = slide.outerWidth(true),
+              margins = state.viewport.width - width;
+
+          queue_width += widths[key] = width + (margins > 0 ? margins : 0);
           slide.css('width', widths[key]+'px');
         } else {
-          queueWidth += widths[key] = $(this).outerWidth(true);
+          queue_width += widths[key] = $(this).outerWidth(true);
         }
       });
 
-      $queue.css('width', queueWidth);
-    }
+      $queue.css('width', queue_width);
+    };
 
-    function slide(dir) {
-      current_index += dir;
-      if (current_index < 0) {
-        current_index = numSlides;
-      } else if (current_index > numSlides) {
-        current_index = 0;
+    var slide = function(dir) {
+      state.index.active += dir;
+      if (state.index.active < 0) {
+        state.index.active = state.count;
+      } else if (state.index.active > state.count) {
+        state.index.active = 0;
       }
 
-      // Fade in the current slide and out the previous slide.
-      fadeSlides(current_index, previous_index);
+      // Fade in the active slide and fade out the previous slide.
+      fadeSlides(state.index.active, state.index.previous);
 
       // Animate the queue.
       setPosition(-getQueuePosition(), 'slide');
-    }
+    };
 
-    function fadeSlides(inSlide, outSlide, speed) {
+    var fadeSlides = function(new_index, old_index, speed) {
       if (settings.fade !== -1) {
         speed = speed === undefined ? settings.transitionSpeed : speed;
-        $slides.eq(inSlide)
-          .addClass('current')
+        $slides.eq(new_index)
+          .addClass('active')
           .children('img')
           .fadeTo(speed, 1);
-        $slides.eq(outSlide)
-          .removeClass('current')
+        $slides.eq(old_index)
+          .removeClass('active')
           .children('img')
           .fadeTo(speed, settings.fade);
       }
-    }
+    };
 
-    function setPosition(value, type, speed) {
-      if (usingCSS) {
+    var setPosition = function(value, type, speed) {
+      if (css.available) {
         speed = speed !== undefined ? speed : (settings.transitionSpeed / 1000);
-        var css = {};
-        css[durationProp] = speed + 's';
-        css[animProp] = 'translate3d(' + value + 'px, 0, 0)';
-        $queue.css(css);
+        var style = {};
+        style[css.transform_duration] = speed + 's';
+        style[css.transform] = 'translate3d(' + value + 'px, 0, 0)';
+        $queue.css(style);
         if (type === 'slide') {
           setTimeout(function() {
-            if (busy) {
+            if (state.busy) {
               slideComplete();
             }
           }, (speed * 1000) + 1);
@@ -128,66 +228,66 @@
           $queue.css('left', value);
         }
       }
-    }
+    };
 
     var slideComplete = function() {
       // Emulate an infinite loop:
       // Bring the first image to the end.
-      if (current_index === (numSlides - 1)) {
-        current_index = 1;
-        fadeSlides(1, numSlides - 1, 0);
+      if (state.index.active === (state.count - 1)) {
+        state.index.active = 1;
+        fadeSlides(1, state.count - 1, 0);
         setPosition(-getQueuePosition(), 'reset', 0);
       }
       // Bring the last image to the beginning.
-      else if (current_index === 0) {
-        current_index = numSlides - 2;
-        fadeSlides(numSlides - 2, 0, 0);
+      else if (state.index.active === 0) {
+        state.index.active = state.count - 2;
+        fadeSlides(state.count - 2, 0, 0);
         setPosition(-getQueuePosition(), 'reset', 0);
       }
 
-      previous_index = current_index;
-      busy = false;
+      state.index.previous = state.index.active;
+      state.busy = false;
     };
 
-    function initTouch() {
+    var initTouch = function() {
       // Initialize object to contain all touch values.
       touch = {
         start: {x: 0, y: 0},
         end: {x: 0, y: 0}
       };
-      $slider.bind('touchstart', onTouchStart);
-    }
+      $slider.bind('touchstart.queueSlider', onTouchStart);
+    };
 
     var onTouchStart = function(e) {
-      if (busy) {
+      if (state.busy) {
         e.preventDefault();
       } else {
         // Record the original position when the touch starts.
-        touch.originalPos = $queue.position();
+        touch.original_position = $queue.position();
         // Record the starting touch x, y coordinates.
         touch.start.x = e.originalEvent.changedTouches[0].pageX;
         touch.start.y = e.originalEvent.changedTouches[0].pageY;
         // Bind a "touchmove" event to the slider.
-        $slider.bind('touchmove', onTouchMove);
+        $slider.bind('touchmove.queueSlider', onTouchMove);
         // Bind a "touchend" event to the slider.
-        $slider.bind('touchend', onTouchEnd);
+        $slider.bind('touchend.queueSlider', onTouchEnd);
       }
     };
 
     var onTouchMove = function(e) {
-      var xMovement = Math.abs(e.originalEvent.changedTouches[0].pageX - touch.start.x),
-          yMovement = Math.abs(e.originalEvent.changedTouches[0].pageY - touch.start.y),
+      var x_movement = Math.abs(e.originalEvent.changedTouches[0].pageX - touch.start.x),
+          y_movement = Math.abs(e.originalEvent.changedTouches[0].pageY - touch.start.y),
           change = e.originalEvent.changedTouches[0].pageX - touch.start.x;
 
-      if ((xMovement * 3) > yMovement) {
+      if ((x_ovement * 3) > y_movement) {
         e.preventDefault();
       }
 
-      setPosition(touch.originalPos.left + change, 'reset', 0);
+      setPosition(touch.original_position.left + change, 'reset', 0);
     };
 
     var onTouchEnd = function(e) {
-      $slider.unbind('touchmove', onTouchMove);
+      $slider.unbind('touchmove.queueSlider');
 
       // Record end x, y positions.
       touch.end.x = e.originalEvent.changedTouches[0].pageX;
@@ -203,96 +303,100 @@
           plugin.previousSlide();
         }
       } else {
-        setPosition(touch.originalPos.left, 'reset', 0);
+        setPosition(touch.original_position.left, 'reset', 0);
       }
 
-      $slider.unbind('touchend', onTouchEnd);
+      $slider.unbind('touchend.queueSlider');
+    };
+
+    //
+    // Public Functions
+    //
+
+    plugin.getState = function(property) {
+      var i,
+          copy = state,
+          properties = property.split('.');
+
+      for (i = 0; i < properties.length; i++) {
+        // Drill down the state object until the property is found or simply
+        // return 'undefined' since the property in question does not exist.
+        if (copy.hasOwnProperty(properties[i])) {
+          copy = copy[properties[i]];
+        } else {
+          return undefined;
+        }
+      }
+
+      return copy;
     };
 
     plugin.nextSlide = function() {
-      if (!busy) {
-        busy = true;
-        clearInterval(play);
+      if (!state.busy) {
+        state.busy = true;
+        clearInterval(state.play);
         slide(1);
       }
     };
 
     plugin.previousSlide = function() {
-      if (!busy) {
-        busy = true;
-        clearInterval(play);
+      if (!state.busy) {
+        state.busy = true;
+        clearInterval(state.play);
         slide(-1);
       }
     };
 
-    plugin.getCurrent = function() {
-      return current_index;
+    plugin.destroy = function() {
+      if (!state.initialized) {
+        return;
+      }
+      state.initialized = false;
+
+      state.busy = true;
+      state.index.active = state.index.previous = 1;
+      clearInterval(state.play);
+      $slider.unbind('.queueSlider');
+
+      // Restore original styles to element.
+      if ($queue.data('origStyle') !== undefined) {
+        $queue.attr('style', $queue.data('origStyle'));
+      } else {
+        $queue.removeAttr('style');
+      }
+
+      // Remove the clones.
+      $slides.filter('.qs-clone').remove();
+
+      // Restore original styles to children.
+      $slides.each(function() {
+        if ($(this).data('origStyle') !== undefined) {
+          $(this).attr('style', $(this).data('origStyle'));
+        } else {
+          $(this).removeAttr('style');
+        }
+      });
+
+      $slides.children('img').fadeTo(0, 1);
+
+      // Remove the appended buttons.
+      if (settings.buttons) {
+        $('.qs-previous, .qs-next').remove();
+      }
+
+      $(window).unbind('.queueSlider');
+      state.busy = false;
     };
 
-    //
-    // Setup the QueueSlider!
-    //
-    if (numSlides > 1) {
-      usingCSS = (function() {
-        var div = document.createElement('div');
-        // CSS transition properties
-        var props = ['WebkitPerspective', 'MozPerspective', 'OPerspective', 'msPerspective'];
-        // Test for each property.
-        for (var i in props) {
-          if (div.style[props[i]] !== undefined) {
-            cssPrefix = props[i].replace('Perspective', '').toLowerCase();
-            animProp = '-' + cssPrefix + '-transform';
-            durationProp = '-' + cssPrefix + '-transition-duration';
-            return true;
-          }
-        }
-        return false;
-      }());
-
-      if (settings.touchEnabled) {
-        initTouch();
+    plugin.rebuild = function(new_options) {
+      if (new_options !== undefined) {
+        settings = $.extend({}, $.fn.queueSlider.defaults, new_options);
       }
+      plugin.destroy();
+      init();
+    };
 
-      // Clone the first and last slides.
-      $queue.prepend($slides.eq(numSlides - 1).clone());
-      $queue.append($slides.eq(0).clone().removeClass('current'));
-      $slides = $('li', $queue);
-      numSlides++;
-      numSlides++;
-
-      computeQueueWidth();
-      setPosition(-getQueuePosition(), 'reset', 0);
-
-      // Fade out the images we aren't viewing.
-      if (settings.fade !== -1) {
-        $slides.not(':eq(1)').children('img').fadeTo(0, settings.fade);
-      }
-
-      // Include the buttons if enabled and assign a click event to them.
-      if (settings.buttons) {
-        $slider.append('<button class="previous" rel="-1">' + settings.previous + '</button><button class="next" rel="1">' + settings.next + '</button>');
-        $('button', $slider).click(function() {
-          if (!busy) {
-            busy = true;
-            clearInterval(play);
-            slide(parseInt($(this).attr('rel'), 10));
-          }
-          return false;
-        });
-      }
-
-      // Start the slideshow if it is enabled.
-      if (settings.speed !== 0) {
-        play = setInterval(function() {
-          if (!busy) {
-            busy = true;
-            slide(settings.direction);
-          }
-        }, settings.speed);
-      }
-
-      $(window).bind('resize', resize_queueslider);
-    }
+    init();
 
     return plugin;
   };
@@ -310,15 +414,15 @@
   };
 
   $.fn.queueSlider.defaults = {
-    alignMode: 'center',    // Use center, left, or right to align the slideshow
+    alignMode: 'center',    // Use center, left, or right to align the slider
     fade: 0.3,              // Opacity of images not being viewed, use -1 to disable
-    transitionSpeed: 700,   // in milliseconds, speed for fade and slide motion
-    speed: 7000,            // in milliseconds, use 0 to disable slideshow
-    direction: 1,           // 1 for images to slide to the left, -1 to silde to the right during slideshow
-    offScreen: false,       // Set to true for a Hulu.com-like slider
-    touchEnabled: true,     // Allow touch interaction with the slideshow
+    transitionSpeed: 700,   // fade and slide transition speed in milliseconds
+    speed: 7000,            // auto-play speed in milliseconds, use 0 to disable
+    direction: 1,           // 1 for auto-play forward, -1 for auto-play in reverse
+    offScreen: false,       // Set to true for a full screen slider
+    touchEnabled: true,     // Allow touch interaction with the slider
     swipeThreshold: 50,     // Amount of pixels a touch swipe needs to exceed in order to slide
-    buttons: true,          // Display Previous/Next buttons
+    buttons: true,          // Enable Previous/Next buttons
     previous: 'Previous',   // Previous button text
     next: 'Next'            // Next button text
   };

@@ -93,8 +93,8 @@
         // Include the buttons if enabled and assign a click event to them.
         if (settings.buttons) {
           $slider
-            .append('<button class="qs-previous" rel="-1">' + settings.previous + '</button>')
-            .append('<button class="qs-next" rel="1">' + settings.next + '</button>');
+            .append('<button class="qs-previous" rel="-1">' + settings.previous + '</button>' +
+                    '<button class="qs-next" rel="1">' + settings.next + '</button>');
           $('button', $slider).bind('click.queueSlider', function(e) {
             if (!state.busy) {
               state.busy = true;
@@ -296,7 +296,7 @@
           y_movement = Math.abs(e.originalEvent.changedTouches[0].pageY - touch.start.y),
           change = e.originalEvent.changedTouches[0].pageX - touch.start.x;
 
-      if ((x_ovement * 3) > y_movement) {
+      if ((x_movement * 3) > y_movement) {
         e.preventDefault();
       }
 

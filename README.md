@@ -35,7 +35,8 @@ var $slider = $('.queueslider').queueSlider({
   buttons: false
 });
 ```
-#### getState()
+
+#### getState(property)
 
 Get the state of the QueueSlider. Available options are:
 * initialized (boolean)
@@ -51,6 +52,7 @@ Get the state of the QueueSlider. Available options are:
 ```javascript
 $slider.data('queueslider').getState('index.active');
 ```
+
 #### nextSlide()
 
 Go to the next slide.
@@ -67,20 +69,52 @@ Go to the previous slide.
 $slider.data('queueslider').previousSlide();
 ```
 
+#### goToSlide(index)
+
+Go to a specific slide index (zero-based).
+
+```javascript
+$slider.data('queueslider').goToSlide(3);
+```
+
 #### destroy()
 
 Destroy the slider.
 
 ```javascript
-$slide.data('queueslider').destroy();
+$slider.data('queueslider').destroy();
 ```
 
-#### rebuild()
+#### rebuild(options)
 
 Rebuild the slider. Optionally, pass in a new settings object.
 
 ```javascript
-$slide.data('queueslider').rebuild({direction: -1});
+$slider.data('queueslider').rebuild({direction: -1});
+```
+
+## Events
+
+#### slideStart
+
+Triggered before the slider starts the transition to the new slide.
+
+```javascript
+$slider.bind('slideStart', function(e, index) {
+  console.log(e); // The event object.
+  console.log(index); // The index of the new slide.
+});
+```
+
+#### slideEnd
+
+Triggered after the slider transitions to the new slide.
+
+```javascript
+$slider.bind('slideEnd', function(e, index) {
+  console.log(e); // The event object.
+  console.log(index); // The index of the new slide.
+});
 ```
 
 ## Supported Browsers

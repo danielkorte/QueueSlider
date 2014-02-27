@@ -178,10 +178,26 @@
     var slide = function(dir) {
       state.index.active += dir;
       if (state.index.active < 0) {
-        state.index.active = state.count;
-      } else if (state.index.active > state.count) {
+        state.index.active = state.count - 1;
+      } else if (state.index.active >= state.count) {
         state.index.active = 0;
       }
+
+      beginSlide();
+    };
+
+    var slideTo = function(index) {
+      if (index >= state.count || index < 0) {
+        return;
+      }
+
+      state.index.active = index;
+
+      beginSlide();
+    };
+
+    var beginSlide = function() {
+      $slider.trigger('slideStart', state.index.active);
 
       // Fade in the active slide and fade out the previous slide.
       fadeSlides(state.index.active, state.index.previous);
@@ -247,6 +263,7 @@
 
       state.index.previous = state.index.active;
       state.busy = false;
+      $slider.trigger('slideEnd', state.index.active);
     };
 
     var initTouch = function() {
@@ -344,6 +361,14 @@
         state.busy = true;
         clearInterval(state.play);
         slide(-1);
+      }
+    };
+
+    plugin.goToSlide = function(index) {
+      if (!state.busy) {
+        state.busy = true;
+        clearInterval(state.play);
+        slideTo(index);
       }
     };
 

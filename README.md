@@ -125,8 +125,8 @@ $slider.bind('slideEnd', function(e, index) {
 * Safari
 
 ## Changelog
-* _02.26.14 - v1.2 - 5.032kb_
-  * Public functions and cleaned up code
+* _02.26.14 - v1.2 - 5.250kb_
+  * Public functions, events, and cleaned up code
 * _01.29.14 - v1.1 - 3.383kb_
   * Added touch support
 * _08.19.11 - v1.0 - 1.929kb_

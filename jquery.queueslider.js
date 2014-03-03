@@ -12,8 +12,8 @@
     var plugin = this,
         $slider = $(element),
         $queue = $('.queue', $slider),
-        $slides = $('li', $queue),
-        widths = [],
+        $slides = $('.queue > li'),
+        sizes = [],
         touch = {},
         css = {},
         state = {
@@ -42,7 +42,7 @@
 
       // Initialize our common jQuery variables and the slide count.
       $queue = $('.queue', $slider);
-      $slides = $('li', $queue);
+      $slides = $('.queue > li');
       state.count = $slides.length;
 
       if (state.count > 1) {
@@ -72,7 +72,7 @@
         $queue.append($slides.first().clone().removeClass('active').addClass('qs-clone'));
 
         // Re-queue the slides.
-        $slides = $('li', $queue);
+        $slides = $('.queue > li');
         state.count = $slides.length;
 
         // Save the original style data.
@@ -82,8 +82,12 @@
         });
 
         // Position and calculate the slider and slides.
-        computeQueueWidth();
+        computeQueueSizes();
         setPosition(-getQueuePosition(), 'reset', 0);
+        if (settings.autoHeight) {
+          $queue.css('overflow', 'hidden');
+          setQueueHeight();
+        }
 
         // Fade out the images we aren't viewing.
         if (settings.fade !== -1) {
@@ -124,7 +128,8 @@
     var resizeQueueSlider = function(e) {
       state.busy = true;
       state.viewport.width = $(window).width();
-      computeQueueWidth();
+      computeQueueSizes();
+      setQueueHeight();
       setPosition(-getQueuePosition(), 'reset', 0);
       state.busy = false;
     };
@@ -135,44 +140,69 @@
 
       switch (settings.alignMode) {
         case 'center':
-          position = (state.viewport.width - widths[state.index.active]) / -2;
+          position = (state.viewport.width - sizes[state.index.active].w) / -2;
           break;
         case 'right':
-          position = state.viewport.width - widths[state.index.active];
+          position = state.viewport.width - sizes[state.index.active].w;
           break;
       }
 
       for (i = 0; i < state.index.active; i++) {
-        position += widths[i];
+        position += sizes[i].w;
       }
 
       return position;
     };
 
-    var computeQueueWidth = function() {
-      var queue_width = 0;
+    var computeQueueSizes = function() {
+      var queue_width = 0,
+          $previous_slide;
 
-      // Get the image widths and set the queue width to their combined value.
+      // Get the image sizes and set the queue width to their combined value.
       $slides.each(function(key, value) {
+        var $slide = $(this);
         if (settings.offScreen) {
-          var slide = $(this);
           if ($(this).data('origStyle') === undefined) {
-            slide.removeAttr('style');
+            $slide.removeAttr('style');
           } else {
-            slide.attr('style', $(this).data('origStyle'));
+            $slide.attr('style', $(this).data('origStyle'));
           }
 
-          var width = slide.outerWidth(true),
+          var width = $slide.outerWidth(true),
               margins = state.viewport.width - width;
 
-          queue_width += widths[key] = width + (margins > 0 ? margins : 0);
-          slide.css('width', widths[key]+'px');
+          sizes[key] = {
+            w: width + (margins > 0 ? margins : 0)
+          };
+
+          queue_width += sizes[key].w;
+          $slide.css('width', sizes[key].w +'px');
         } else {
-          queue_width += widths[key] = $(this).outerWidth(true);
+          sizes[key] = {
+            w: $slide.outerWidth(true)
+          };
+
+          queue_width += sizes[key].w;
         }
+
+        if ($previous_slide) {
+          sizes[key - 1].h = $previous_slide.outerHeight(true);
+        }
+        $previous_slide = $slide;
       });
 
+      if ($previous_slide) {
+        sizes[state.count - 1].h = $previous_slide.outerHeight(true);
+      }
+
       $queue.css('width', queue_width);
+    };
+
+    var setQueueHeight = function() {
+      if (settings.autoHeight) {
+        $slider.css('height', sizes[state.index.active].h);
+        $queue.stop().animate({height: sizes[state.index.active].h}, Math.floor(settings.transitionSpeed / 3));
+      }
     };
 
     var slide = function(dir) {
@@ -198,6 +228,8 @@
 
     var beginSlide = function() {
       $slider.trigger('slideStart', state.index.active);
+
+      setQueueHeight();
 
       // Fade in the active slide and fade out the previous slide.
       fadeSlides(state.index.active, state.index.previous);
@@ -445,6 +477,7 @@
     speed: 7000,            // auto-play speed in milliseconds, use 0 to disable
     direction: 1,           // 1 for auto-play forward, -1 for auto-play in reverse
     offScreen: false,       // Set to true for a full screen slider
+    autoHeight: false,      // Adjust slider height for each slide
     touchEnabled: true,     // Allow touch interaction with the slider
     swipeThreshold: 50,     // Amount of pixels a touch swipe needs to exceed in order to slide
     buttons: true,          // Enable Previous/Next buttons

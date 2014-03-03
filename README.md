@@ -19,6 +19,7 @@ Download the [production version][min] or the [development version][max].
   speed: 7000,            // auto-play speed in milliseconds, use 0 to disable
   direction: 1,           // 1 for auto-play forward, -1 for auto-play in reverse
   offScreen: false,       // Set to true for a full screen slider
+  autoHeight: false,      // Adjust slider height for each slide
   touchEnabled: true,     // Allow touch interaction with the slider
   swipeThreshold: 50,     // Amount of pixels a touch swipe needs to exceed in order to slide
   buttons: true,          // Enable Previous/Next buttons

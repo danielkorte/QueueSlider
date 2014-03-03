@@ -22,8 +22,8 @@
           busy: false,
           count: 0,
           index: {
-            active: 1,
-            previous: 1
+            active: 0,
+            previous: 0
           },
           viewport: {
             width: $(window).width(),
@@ -67,23 +67,30 @@
           initTouch();
         }
 
-        // Clone the first and last slides.
-        $queue.prepend($slides.last().clone().addClass('qs-clone'));
-        $queue.append($slides.first().clone().removeClass('active').addClass('qs-clone'));
+        if (settings.mode === 'horizontal') {
+          // Clone the first and last slides.
+          $queue.prepend($slides.last().clone().addClass('qs-clone'));
+          $queue.append($slides.first().clone().removeClass('active').addClass('qs-clone'));
 
-        // Re-queue the slides.
-        $slides = $('.queue > li');
-        state.count = $slides.length;
+          state.index.active = state.index.previous = 1;
+
+          // Re-queue the slides.
+          $slides = $('.queue > li');
+          state.count = $slides.length;
+        }
 
         // Save the original style data.
         $queue.data('origStyle', $queue.attr('style'));
         $slides.each(function() {
-          $(this).data('origStyle', $(this).attr('style'));
+          var $this = $(this);
+          $this.data('origStyle', $this.attr('style'));
         });
 
         // Position and calculate the slider and slides.
         computeQueueSizes();
-        setPosition(-getQueuePosition(), 'reset', 0);
+        if (settings.mode === 'horizontal') {
+          setPosition(-getQueuePosition(), 'reset', 0);
+        }
         if (settings.autoHeight) {
           $queue.css('overflow', 'hidden');
           setQueueHeight();
@@ -91,7 +98,7 @@
 
         // Fade out the images we aren't viewing.
         if (settings.fade !== -1) {
-          $slides.not(':eq(1)').children('img').fadeTo(0, settings.fade);
+          $slides.not(':eq(' + state.index.active + ')').find('img').fadeTo(0, settings.fade);
         }
 
         // Include the buttons if enabled and assign a click event to them.
@@ -110,14 +117,7 @@
         }
 
         // Auto-play the slider if it is enabled.
-        if (settings.speed !== 0) {
-          state.play = setInterval(function() {
-            if (!state.busy) {
-              state.busy = true;
-              slide(settings.direction);
-            }
-          }, settings.speed);
-        }
+        setTimeout(startQueueSlider, settings.delay);
 
         $(window).bind('resize.queueSlider', resizeQueueSlider);
       }
@@ -125,12 +125,27 @@
       state.initialized = true;
     };
 
+    var startQueueSlider = function() {
+      $slider.addClass('initialized');
+      $slides.eq(state.index.active).addClass('active');
+      if (settings.speed !== 0) {
+        state.play = setInterval(function() {
+          if (!state.busy) {
+            state.busy = true;
+            slide(settings.direction);
+          }
+        }, settings.speed);
+      }
+    };
+
     var resizeQueueSlider = function(e) {
       state.busy = true;
       state.viewport.width = $(window).width();
       computeQueueSizes();
       setQueueHeight();
-      setPosition(-getQueuePosition(), 'reset', 0);
+      if (settings.mode === 'horizontal') {
+        setPosition(-getQueuePosition(), 'reset', 0);
+      }
       state.busy = false;
     };
 
@@ -156,6 +171,7 @@
 
     var computeQueueSizes = function() {
       var queue_width = 0,
+          queue_height = 0,
           $previous_slide;
 
       // Get the image sizes and set the queue width to their combined value.
@@ -185,23 +201,50 @@
           queue_width += sizes[key].w;
         }
 
+        // Fade-mode slides need to be on top of each other.
+        if (settings.mode === 'fade') {
+          $slide.css({
+            position: 'absolute',
+            top: 0,
+            left: 0
+          });
+        }
+
+        // Calculate the height after adjusting the width.
         if ($previous_slide) {
           sizes[key - 1].h = $previous_slide.outerHeight(true);
+          if (sizes[key - 1].h > queue_height) {
+            queue_height = sizes[key -1].h;
+          }
         }
+
         $previous_slide = $slide;
       });
 
+      // Calculate the last slided's height after adjusting the width.
       if ($previous_slide) {
         sizes[state.count - 1].h = $previous_slide.outerHeight(true);
+        if (sizes[state.count - 1].h > queue_height) {
+          queue_height = sizes[state.count -1].h;
+        }
       }
 
-      $queue.css('width', queue_width);
+      if (settings.mode === 'horizontal') {
+        $queue.css({
+          width: queue_width,
+          height: queue_height
+        });
+      } else {
+        $queue.css({
+          width: '100%',
+          height: queue_height
+        });
+      }
     };
 
     var setQueueHeight = function() {
       if (settings.autoHeight) {
-        $slider.css('height', sizes[state.index.active].h);
-        $queue.stop().animate({height: sizes[state.index.active].h}, Math.floor(settings.transitionSpeed / 3));
+        $slider.stop().animate({height: sizes[state.index.active].h}, Math.floor(settings.transitionSpeed / 3));
       }
     };
 
@@ -235,7 +278,11 @@
       fadeSlides(state.index.active, state.index.previous);
 
       // Animate the queue.
-      setPosition(-getQueuePosition(), 'slide');
+      if (settings.mode === 'horizontal') {
+        setPosition(-getQueuePosition(), 'slide');
+      } else {
+        slideComplete();
+      }
     };
 
     var fadeSlides = function(new_index, old_index, speed) {
@@ -243,12 +290,15 @@
         speed = speed === undefined ? settings.transitionSpeed : speed;
         $slides.eq(new_index)
           .addClass('active')
-          .children('img')
+          .find('img')
           .fadeTo(speed, 1);
         $slides.eq(old_index)
           .removeClass('active')
-          .children('img')
+          .find('img')
           .fadeTo(speed, settings.fade);
+      } else {
+        $slides.eq(new_index).addClass('active');
+        $slides.eq(old_index).removeClass('active');
       }
     };
 
@@ -279,18 +329,20 @@
     };
 
     var slideComplete = function() {
-      // Emulate an infinite loop:
-      // Bring the first image to the end.
-      if (state.index.active === (state.count - 1)) {
-        state.index.active = 1;
-        fadeSlides(1, state.count - 1, 0);
-        setPosition(-getQueuePosition(), 'reset', 0);
-      }
-      // Bring the last image to the beginning.
-      else if (state.index.active === 0) {
-        state.index.active = state.count - 2;
-        fadeSlides(state.count - 2, 0, 0);
-        setPosition(-getQueuePosition(), 'reset', 0);
+      if (settings.mode === 'horizontal') {
+        // Emulate an infinite loop:
+        // Bring the first image to the end.
+        if (state.index.active === (state.count - 1)) {
+          state.index.active = 1;
+          fadeSlides(1, state.count - 1, 0);
+          setPosition(-getQueuePosition(), 'reset', 0);
+        }
+        // Bring the last image to the beginning.
+        else if (state.index.active === 0) {
+          state.index.active = state.count - 2;
+          fadeSlides(state.count - 2, 0, 0);
+          setPosition(-getQueuePosition(), 'reset', 0);
+        }
       }
 
       state.index.previous = state.index.active;
@@ -434,7 +486,7 @@
         }
       });
 
-      $slides.children('img').fadeTo(0, 1);
+      $slides.find('img').fadeTo(0, 1);
 
       // Remove the appended buttons.
       if (settings.buttons) {
@@ -471,7 +523,9 @@
   };
 
   $.fn.queueSlider.defaults = {
+    mode: 'horizontal',     // Use horizontal or fade
     alignMode: 'center',    // Use center, left, or right to align the slider
+    delay: 0,               // Delay the start of slider
     fade: 0.3,              // Opacity of images not being viewed, use -1 to disable
     transitionSpeed: 700,   // fade and slide transition speed in milliseconds
     speed: 7000,            // auto-play speed in milliseconds, use 0 to disable

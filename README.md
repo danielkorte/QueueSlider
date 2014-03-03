@@ -13,7 +13,9 @@ Download the [production version][min] or the [development version][max].
 
 ```javascript
 {
+  mode: 'horizontal',     // Use horizontal or fade
   alignMode: 'center',    // Use center, left, or right to align the slider
+  delay: 0,               // Delay the start of slider
   fade: 0.3,              // Opacity of images not being viewed, use -1 to disable
   transitionSpeed: 700,   // fade and slide transition speed in milliseconds
   speed: 7000,            // auto-play speed in milliseconds, use 0 to disable

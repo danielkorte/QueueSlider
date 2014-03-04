@@ -384,7 +384,9 @@
         e.preventDefault();
       }
 
-      setPosition(touch.original_position.left + change, 'reset', 0);
+      if (settings.mode === 'horizontal') {
+        setPosition(touch.original_position.left + change, 'reset', 0);
+      }
     };
 
     var onTouchEnd = function(e) {
@@ -403,7 +405,7 @@
         } else {
           plugin.previousSlide();
         }
-      } else {
+      } else if (settings.mode === 'horizontal') {
         setPosition(touch.original_position.left, 'reset', 0);
       }
 

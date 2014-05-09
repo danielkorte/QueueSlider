@@ -1,5 +1,5 @@
 /*
- * jQuery Queue Slider v1.2.0
+ * jQuery Queue Slider v1.2.1
  * http://danielkorte.com
  *
  * Free to use and abuse under the MIT license.

@@ -2,7 +2,7 @@
   "name": "queueslider",
   "title": "QueueSlider",
   "description": "QueueSlider is another jQuery slider plugin for variable width images.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "bugs": "https://github.com/danielkorte/QueueSlider/issues",
   "docs": "https://github.com/danielkorte/QueueSlider",
   "demo": "http://queueslider.danielkorte.com/",

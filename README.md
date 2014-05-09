@@ -1,4 +1,4 @@
-# QueueSlider v1.2.0
+# QueueSlider v1.2.1
 
 **QueueSlider** is another jQuery slider plugin for variable width images.
 
@@ -128,6 +128,8 @@ $slider.bind('slideEnd', function(e, index) {
 * Safari
 
 ## Changelog
+* _05.09.14 - v1.2.1 - 5.250kb_
+  * Use Semantic Versioning and submit to jQuery Plugin Registry
 * _02.26.14 - v1.2.0 - 5.250kb_
   * Public functions, events, and cleaned up code
 * _01.29.14 - v1.1.0 - 3.383kb_

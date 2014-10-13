@@ -1,36 +1,37 @@
 body {
-  margin:0;
-  padding:0;
-  font:10px/10px Helvetica, sans-serif;
-  background-color:black;
+  margin: 0;
+  padding: 0;
+  font: 10px/10px Helvetica, sans-serif;
+  background-color: #000;
 }
 div.queueslider {
-  margin-top:100px;
-  height:400px;
+  margin-top: 100px;
+  height: 400px;
 }
 div.queueslider ul.queue {
-  background-color:black;
+  background-color: #000;
 }
 div.queueslider button {
-  top:115px;
-  padding:10px 0;
-  width:65px;
-  color:black;
-  text-align:center;
+  top: 115px;
+  padding: 10px 0;
+  width: 65px;
+  color: black;
+  text-align: center;
   -webkit-border-top-left-radius: 5px;
   -webkit-border-top-right-radius: 5px;
   -moz-border-radius-topleft: 5px;
   -moz-border-radius-topright: 5px;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  background-color:white;
+  background-color: #fff;
 }
-div.queueslider button:hover, div.queueslider button:focus {
-  color:white;
-  background-color:black;
+div.queueslider button:hover,
+div.queueslider button:focus {
+  color: #fff;
+  background-color: #000;
 }
-div.queueslider button.previous {
-  -webkit-transform :rotate(90deg);
+div.queueslider button.qs-previous {
+  -webkit-transform: rotate(90deg);
   -moz-transform: rotate(90deg);
   -ms-transform: rotate(90deg);
   -o-transform: rotate(90deg);
@@ -42,7 +43,8 @@ div.queueslider button.previous {
   transform-origin: bottom left;
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
-div.queueslider button.next {
+div.queueslider button.qs-next {
+  right: 0;
   -webkit-transform: rotate(-90deg);
   -moz-transform: rotate(-90deg);
   -ms-transform: rotate(-90deg);

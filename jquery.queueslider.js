@@ -1,5 +1,5 @@
 /*
- * jQuery Queue Slider v1.2.2
+ * jQuery Queue Slider v1.2.3
  * http://danielkorte.com
  *
  * Free to use and abuse under the MIT license.
@@ -12,7 +12,7 @@
     var plugin = this,
         $slider = $(element),
         $queue = $('.queue', $slider),
-        $slides = $('.queue > li'),
+        $slides = $('.queue > li', $slider),
         sizes = [],
         touch = {},
         css = {},
@@ -42,7 +42,7 @@
 
       // Initialize our common jQuery variables and the slide count.
       $queue = $('.queue', $slider);
-      $slides = $('.queue > li');
+      $slides = $('.queue > li', $slider);
       state.count = $slides.length;
 
       if (state.count > 1) {
@@ -75,7 +75,7 @@
           state.index.active = state.index.previous = 1;
 
           // Re-queue the slides.
-          $slides = $('.queue > li');
+          $slides = $('.queue > li', $slider);
           state.count = $slides.length;
         }
 
@@ -513,7 +513,7 @@
 
       // Remove the appended buttons.
       if (settings.buttons) {
-        $('.qs-previous, .qs-next').remove();
+        $('.qs-previous, .qs-next', $slider).remove();
       }
 
       $(window).unbind('.queueSlider');

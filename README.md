@@ -1,4 +1,4 @@
-# QueueSlider v1.2.1
+# QueueSlider v1.2.2
 
 **QueueSlider** is another jQuery slider plugin for variable width images.
 
@@ -25,7 +25,9 @@ Download the [production version][min] or the [development version][max].
   touchEnabled: true,     // Allow touch interaction with the slider
   swipeThreshold: 50,     // Amount of pixels a touch swipe needs to exceed in order to slide
   buttons: true,          // Enable Previous/Next buttons
+  keyboardButtons: true,  // Enable keyboard right/left buttons to advance slides
   previous: 'Previous',   // Previous button text
+  next: 'Next'            // Next button text
 }
 ```
 
@@ -122,19 +124,21 @@ $slider.bind('slideEnd', function(e, index) {
 
 ## Supported Browsers
 
-* Chrome
+* Chrome (latest version)
 * Internet Explorer (6+)
-* Firefox
-* Safari
+* Firefox (latest version)
+* Safari (latest version)
 
 ## Changelog
-* _05.09.14 - v1.2.1 - 5.250kb_
+* _10.12.14 - v1.2.2 - 6.408kb_
+  * Add left/right arrow keyboard support
+* _05.09.14 - v1.2.1 - 6.226kb_
   * Use Semantic Versioning and submit to jQuery Plugin Registry
-* _02.26.14 - v1.2.0 - 5.250kb_
+* _02.26.14 - v1.2.0 - 5.377kb_
   * Public functions, events, and cleaned up code
-* _01.29.14 - v1.1.0 - 3.383kb_
+* _01.29.14 - v1.1.0 - 3.371kb_
   * Added touch support
-* _08.19.11 - v1.0.0 - 1.929kb_
+* _08.19.11 - v1.0.0 - 2.183kb_
   * Initial release
 
 ## License

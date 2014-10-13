@@ -1,5 +1,5 @@
 /*
- * jQuery Queue Slider v1.2.1
+ * jQuery Queue Slider v1.2.2
  * http://danielkorte.com
  *
  * Free to use and abuse under the MIT license.
@@ -113,6 +113,27 @@
               slide(parseInt($(this).attr('rel'), 10));
             }
             return false;
+          });
+        }
+
+        // Enable keyboard left/right buttons
+        if (settings.keyboardButtons) {
+          $(document).bind('keydown.queueSlider', function(e) {
+            switch(e.which) {
+              // Left arrow key
+              case 37:
+                plugin.previousSlide();
+                break;
+              // Right arrow key
+              case 39:
+                plugin.nextSlide();
+                break;
+              default:
+                // Exit this handler for all other keys.
+                return;
+            }
+            // Prevent the default action (scroll / move caret).
+            e.preventDefault();
           });
         }
 
@@ -537,6 +558,7 @@
     touchEnabled: true,     // Allow touch interaction with the slider
     swipeThreshold: 50,     // Amount of pixels a touch swipe needs to exceed in order to slide
     buttons: true,          // Enable Previous/Next buttons
+    keyboardButtons: true,  // Enable keyboard right/left buttons to advance slides
     previous: 'Previous',   // Previous button text
     next: 'Next'            // Next button text
   };

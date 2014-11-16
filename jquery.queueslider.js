@@ -1,5 +1,5 @@
 /*
- * jQuery Queue Slider v1.2.3
+ * jQuery Queue Slider v1.2.4
  * http://danielkorte.com
  *
  * Free to use and abuse under the MIT license.
@@ -301,8 +301,6 @@
       // Animate the queue.
       if (settings.mode === 'horizontal') {
         setPosition(-getQueuePosition(), 'slide');
-      } else {
-        slideComplete();
       }
     };
 
@@ -316,7 +314,11 @@
         $slides.eq(old_index)
           .removeClass('active')
           .find('img')
-          .fadeTo(speed, settings.fade);
+          .fadeTo(speed, settings.fade, function() {
+            if (settings.mode === 'fade') {
+              slideComplete();
+            }
+          });
       } else {
         $slides.eq(new_index).addClass('active');
         $slides.eq(old_index).removeClass('active');
@@ -327,6 +329,9 @@
       if (css.available) {
         speed = speed !== undefined ? speed : (settings.transitionSpeed / 1000);
         var style = {};
+        if (type === 'reset') {
+          speed = 0;
+        }
         style[css.transform_duration] = speed + 's';
         style[css.transform] = 'translate3d(' + value + 'px, 0, 0)';
         $queue.css(style);

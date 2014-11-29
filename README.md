@@ -1,4 +1,4 @@
-# QueueSlider v1.2.4
+# QueueSlider v1.2.5
 
 **QueueSlider** is another jQuery slider plugin for variable width images.
 
@@ -56,6 +56,14 @@ Get the state of the QueueSlider. Available options are:
 
 ```javascript
 $slider.data('queueslider').getState('index.active');
+```
+
+#### pause()
+
+Pause the slider.
+
+```javascript
+$slider.data('queueslider').pause();
 ```
 
 #### nextSlide()
@@ -130,6 +138,8 @@ $slider.bind('slideEnd', function(e, index) {
 * Safari (latest version)
 
 ## Changelog
+* _11.28.14 - v1.2.5 - 6.526kb_
+  * Add pause() public function.
 * _11.15.14 - v1.2.4 - 6.484kb_
   * Fix busy state and slide position reset
 * _10.12.14 - v1.2.3 - 6.435kb_

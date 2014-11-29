@@ -1,5 +1,5 @@
 /*
- * jQuery Queue Slider v1.2.4
+ * jQuery Queue Slider v1.2.5
  * http://danielkorte.com
  *
  * Free to use and abuse under the MIT license.
@@ -458,6 +458,10 @@
       }
 
       return copy;
+    };
+
+    plugin.pause = function() {
+      clearInterval(state.play);
     };
 
     plugin.nextSlide = function() {

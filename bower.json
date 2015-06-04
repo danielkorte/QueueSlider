@@ -1,0 +1,22 @@
+{
+  "name": "QueueSlider",
+  "version": "1.2.5",
+  "homepage": "https://github.com/danielkorte/QueueSlider",
+  "authors": [
+    "Daniel Korte"
+  ],
+  "description": "Another jQuery slider plugin for variable width images.",
+  "main": "jquery.queueslider.min.js",
+  "keywords": [
+    "jquery",
+    "slider"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

@@ -138,6 +138,7 @@ $slider.bind('slideEnd', function(e, index) {
 * Safari (latest version)
 
 ## Changelog
+
 * _11.28.14 - v1.2.5 - 6.526kb_
   * Add pause() public function.
 * _11.15.14 - v1.2.4 - 6.484kb_
@@ -163,8 +164,6 @@ Free to use and abuse under the MIT license. [http://www.opensource.org/licenses
 
 Daniel Korte  
 Web Developer  
-TOKY Branding + Design  
-Saint Louis, MO
 
-[toky.com](http://toky.com/)  
-[danielkorte.com](http://danielkorte.com/)
+[toky.com](https://toky.com/)  
+[danielkorte.com](https://www.danielkorte.com/)

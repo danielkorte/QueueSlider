@@ -1,4 +1,4 @@
-# QueueSlider v1.2.5
+# QueueSlider v1.2.6
 
 **QueueSlider** is another jQuery slider plugin for variable width images.
 
@@ -139,6 +139,8 @@ $slider.bind('slideEnd', function(e, index) {
 
 ## Changelog
 
+* _20.02.02 - v1.2.6 - 6.526kb_
+  * Adds QueueSlider to Bower
 * _11.28.14 - v1.2.5 - 6.526kb_
   * Add pause() public function.
 * _11.15.14 - v1.2.4 - 6.484kb_

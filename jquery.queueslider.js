@@ -1,9 +1,9 @@
 /*
  * jQuery Queue Slider v1.2.6
- * http://danielkorte.com
+ * https://www.danielkorte.com
  *
  * Free to use and abuse under the MIT license.
- * http://www.opensource.org/licenses/mit-license.php
+ * https://opensource.org/licenses/mit-license.php
  */
 
 (function($){

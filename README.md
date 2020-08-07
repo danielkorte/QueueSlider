@@ -6,8 +6,8 @@
 
 Download the [production version][min] or the [development version][max].
 
-[min]: https://raw.github.com/danielkorte/QueueSlider/master/jquery.queueslider.min.js
-[max]: https://raw.github.com/danielkorte/QueueSlider/master/jquery.queueslider.js
+[min]: https://raw.githubusercontent.com/danielkorte/QueueSlider/main/jquery.queueslider.min.js
+[max]: https://raw.githubusercontent.com/danielkorte/QueueSlider/main/jquery.queueslider.js
 
 ## Default Settings Object
 
@@ -114,8 +114,8 @@ Triggered before the slider starts the transition to the new slide.
 
 ```javascript
 $slider.bind('slideStart', function(e, index) {
-  console.log(e); // The event object.
-  console.log(index); // The index of the new slide.
+  window.console.log(e); // The event object.
+  window.console.log(index); // The index of the new slide.
 });
 ```
 
@@ -125,8 +125,8 @@ Triggered after the slider transitions to the new slide.
 
 ```javascript
 $slider.bind('slideEnd', function(e, index) {
-  console.log(e); // The event object.
-  console.log(index); // The index of the new slide.
+  window.console.log(e); // The event object.
+  window.console.log(index); // The index of the new slide.
 });
 ```
 
@@ -160,7 +160,7 @@ $slider.bind('slideEnd', function(e, index) {
 
 ## License
 
-Free to use and abuse under the MIT license. [http://www.opensource.org/licenses/mit-license.php](http://www.opensource.org/licenses/mit-license.php)
+Free to use and abuse under the MIT license. [https://opensource.org/licenses/mit-license.php](https://opensource.org/licenses/mit-license.php)
 
 ## Author
 

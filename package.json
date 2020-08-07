@@ -5,7 +5,7 @@
   "version": "1.2.6",
   "bugs": "https://github.com/danielkorte/QueueSlider/issues",
   "docs": "https://github.com/danielkorte/QueueSlider",
-  "demo": "http://queueslider.danielkorte.com/",
+  "demo": "https://danielkorte.github.io/QueueSlider/",
   "author": {
     "name": "Daniel Korte",
     "url": "https://www.danielkorte.com"
@@ -18,7 +18,7 @@
     {
       "type": "MIT",
       "description": "Free to use and abuse under the MIT license.",
-      "url": "http://www.opensource.org/licenses/mit-license.php"
+      "url": "https://opensource.org/licenses/mit-license.php"
     }
   ],
   "scripts": {
